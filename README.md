@@ -52,3 +52,11 @@ of the proofs of the examples below.
 
   Contains the ghost theory required for the verification of
   ```increasing.v```.
+
+## Prerequisites
+
+This code has been tested with the following versions:
+
+- Coq 8.9 (https://github.com/coq/coq/releases/tag/V8.9.0)
+- iris (https://gitlab.mpi-sws.org/iris/iris/) version: 0655aa19d67a1f8a364625bd8ecf5bb1ae0c2c75
+- stdpp (https://gitlab.mpi-sws.org/iris/stdpp) version: 87b2fe62995413c6dea48c97c1ae4e8976f10d01
