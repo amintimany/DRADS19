@@ -2,3 +2,6 @@
 
 incr.v
 linked_list.v
+positive.v
+increasing_ghost.v
+increasing.v
