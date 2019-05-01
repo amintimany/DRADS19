@@ -1,0 +1,95 @@
+\documentclass{beamer}
+
+\usepackage{includes}
+\usepackage{iris}
+
+\usetheme{default}
+\setbeamertemplate{navigation symbols}{
+	\usebeamerfont{footline}\usebeamercolor[fg]{footline}%
+	\hspace{1em}\insertframenumber
+}
+
+\begin{document}
+
+\title{Program verification in Iris}
+\author{Amin Timany}
+\institute{imec-Distrinet, KU Leuven}
+\date{May 2\textsuperscript{nd}, 2019 @ DRADS'19, Leuven}
+
+\frame{\titlepage}
+
+\begin{frame}[t]{Partial correctness}
+  We want to prove partial correctness of programs, \ie, safety, of \emph{concurrent functional imperative} programs.
+  \begin{itemize}
+  \item Safety:
+    \begin{align*}
+      \SAFE{\expr}{\pred} \eqdef{} & \expr ~\text{ is safe, \ie, will not crash, and}\\
+      & \text{whenever $\expr$ terminates with a value $\val$,}\\
+      & \text{$\pred(\val)$ holds }
+    \end{align*}
+  \item Functional: firs class higher-order recursive functions:
+    \begin{itemize}
+    \item $\Rec f \var = \expr$
+    \item Higher-order: functions can be passed around as arguments
+    \end{itemize}
+  \item Imperative: shared memory concurrency through references
+    \begin{itemize}
+    \item Memory locations: $\loc$
+    \item Allocation: $\Ref(\expr)$
+    \item Reading: $\deref \expr$
+    \item Writing: $\expr \gets \expr'$
+    \item Atomic compare-and-set operation : $\CAS(\expr_1, \expr_2, \expr_3)$
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[t]{Using \Iris{}}
+  We use the program logic \Iris{} :
+  \begin{itemize}
+  \item Hoare Triples:
+    \begin{align*}
+      \hoare{\prop}{\expr}{\pred}
+    \end{align*}
+    are defined using \Iris{}'s weakest preconditions ($\wpre{\expr}{\pred}$)
+    \begin{align*}
+      \hoare{\prop}{\expr}{\pred} \eqdef{} {\alert \always} (\prop {\alert \wand} \wpre{\expr}{\pred})
+    \end{align*}
+    \begin{itemize}
+      \item $\wand$: separating implication, a.k.a., magic wand
+      \item $\always$: Does not depend on \emph{ephemeral} resources, \eg, $\loc \mapsto \val$
+    \end{itemize}
+  \item Adequacy of \Iris{}'s weakest preconditions:
+    \[ (\proves_{\mathrm{Iris}} \wpre{\expr}{\pred})  \proves_{\mathrm{Coq}} \SAFE{\expr}{\pred}\]
+    And for Hoare triples:
+    \[ (\proves_{\mathrm{Iris}} \hoare{\TRUE}{\expr}{\pred})  \proves_{\mathrm{Coq}} \SAFE{\expr}{\pred}\]
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[t]{\Iris{} rules for weakest preconditions}
+  \begin{mathpar}
+    \inferH{WP-bind}{\wpre{\expr}{\var.\; \wpre{\lctx[\var]}{\pred}}}{\wpre{\lctx[\expr]}{\pred}}
+    \and
+    \inferH{WP-if-true}{\wpre{\expr_1}{\pred}}{\wpre{\If \True then \expr_1 \Else \expr_2}{\pred}}
+    \and
+    \inferH{WP-load}{\loc \mapsto \val}{\wpre{\deref \loc}{\var.\; \var = \val \ast \loc \mapsto \val}}
+    \and
+    \inferH{WP-store}{\loc \mapsto \val}{\wpre{\loc \gets \valB}{\var.\; \var = \TT \ast \loc \mapsto \valB}}
+    \and
+    \inferH{WP-cas-suc}{\loc \mapsto \val}{\wpre{\CAS(\loc, \val, \valB)}{\var.\; \var = \True \ast \loc \mapsto \valB}}
+    \and
+    \inferH{WP-cas-fail}{\loc \mapsto \val' \and \val \neq \val'}{\wpre{\CAS(\loc, \val, \valB)}{\var.\; \var = \False \ast \loc \mapsto \val'}}
+  \end{mathpar}
+\end{frame}
+
+\begin{frame}[t]{\Iris{} invariants}
+  We use invariants to enforce protocols between threads:
+  \[ \text{$P$ holds \emph{invariantly}}: \hspace{1em} \knowInv{\namesp}{P} \]
+
+  Allows us to \emph{assume} $P$ before and atomic step \emph{but} we must ensure it \emph{holds} after that step
+
+  \vspace{1em}
+  Invariants are always \emph{persistent} (as opposed to ephemeral)
+
+\end{frame}
+
+\end{document}
