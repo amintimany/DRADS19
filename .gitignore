@@ -6,3 +6,11 @@ Makefile.coq.conf
 *.glob
 *.vo
 .lia.cache
+*/auto/*
+*.log
+*.nav
+*.out
+*.pdf
+*.snm
+*.synctex.gz
+*.toc
