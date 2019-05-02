@@ -27,6 +27,7 @@
       & \text{whenever $\expr$ terminates with a value $\val$,}\\
       & \text{$\pred(\val)$ holds }
     \end{align*}
+  \item Concurrency: $\Fork{\expr}$
   \item Functional: firs class higher-order recursive functions:
     \begin{itemize}
     \item $\Rec f \var = \expr$
@@ -83,6 +84,8 @@
 
 \begin{frame}[t]{\Iris{} rules for weakest preconditions}
   \begin{mathpar}
+    \inferH{WP-fork}{\wpre{\expr}{\_.\; \TRUE}}{\wpre{\Fork{\expr}}{\var.\; \var = \TT}}
+    \and
     \inferH{WP-load}{\loc \mapsto \val}{\wpre{\deref \loc}{\var.\; \var = \val \ast \loc \mapsto \val}}
     \and
     \inferH{WP-store}{\loc \mapsto \val}{\wpre{\loc \gets \valB}{\var.\; \var = \TT \ast \loc \mapsto \valB}}
