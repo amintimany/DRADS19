@@ -67,10 +67,22 @@
 
 \begin{frame}[t]{\Iris{} rules for weakest preconditions}
   \begin{mathpar}
+    \inferH{WP-val}{\pred(\val)}{\wpre{\val}{\pred}}
+    \and
     \inferH{WP-bind}{\wpre{\expr}{\var.\; \wpre{\lctx[\var]}{\pred}}}{\wpre{\lctx[\expr]}{\pred}}
+    \and
+    \inferH{WP-lam}{\wpre{\subst{\expr}{\var}{\val}}{\pred}}{\wpre{(\Lam \var. \expr)~\val}{\pred}}
+    \and
+    \inferH{WP-rec}{\wpre{\subst{\expr}{\var, f}{\val, \Rec f \var = \expr}}{\pred}}{\wpre{(\Rec f \var = \expr)~\val}{\pred}}
     \and
     \inferH{WP-if-true}{\wpre{\expr_1}{\pred}}{\wpre{\If \True then \expr_1 \Else \expr_2}{\pred}}
     \and
+    \inferH{WP-if-false}{\wpre{\expr_2}{\pred}}{\wpre{\If \False then \expr_1 \Else \expr_2}{\pred}}
+  \end{mathpar}
+\end{frame}
+
+\begin{frame}[t]{\Iris{} rules for weakest preconditions}
+  \begin{mathpar}
     \inferH{WP-load}{\loc \mapsto \val}{\wpre{\deref \loc}{\var.\; \var = \val \ast \loc \mapsto \val}}
     \and
     \inferH{WP-store}{\loc \mapsto \val}{\wpre{\loc \gets \valB}{\var.\; \var = \TT \ast \loc \mapsto \valB}}
@@ -89,6 +101,9 @@
 
   \vspace{1em}
   Invariants are always \emph{persistent} (as opposed to ephemeral)
+
+  \vspace{1em}
+  The name $\namesp$ is used to keep track of open invariants: invariants cannot be opened twice in a \emph{nested} fashion.
 
 \end{frame}
 
